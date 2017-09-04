@@ -9,5 +9,6 @@
 	</head>
 	<body>
 		<h1>Vandaag zijn we ${openGesloten}</h1>
+		<img src='images/${openGesloten}.png' alt='${openGesloten}'>
 	</body>
 </html>
