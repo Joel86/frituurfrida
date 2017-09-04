@@ -10,5 +10,8 @@
 	<body>
 		<h1>Vandaag zijn we ${openGesloten}</h1>
 		<img src='images/${openGesloten}.png' alt='${openGesloten}'>
+		<h2>Adres</h2>
+		${adres.straat} ${adres.huisNr}<br>
+		${adres.gemeente.postcode} ${adres.gemeente.naam}
 	</body>
 </html>
