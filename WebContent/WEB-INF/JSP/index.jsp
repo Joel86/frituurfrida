@@ -1,6 +1,4 @@
 <%@page contentType='text/html' pageEncoding='UTF-8' session='false'%>
-<%@page import='java.time.DayOfWeek'%>
-<%@page import='java.time.LocalDate'%>
 <!doctype html>
 <html lang='nl'>
 	<head>
@@ -10,13 +8,6 @@
 		<link rel='stylesheet' href='styles/default.css'>
 	</head>
 	<body>
-		<h1>Vandaag zijn we
-		<%
-		LocalDate vandaag = LocalDate.now();
-		DayOfWeek weekdag = vandaag.getDayOfWeek();
-		out.print(weekdag == DayOfWeek.MONDAY || weekdag == DayOfWeek.THURSDAY ? 
-			"gesloten" : "open");
-		%>
-		</h1>
+		<h1>Vandaag zijn we ${openGesloten}</h1>
 	</body>
 </html>

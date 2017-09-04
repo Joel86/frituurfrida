@@ -1,7 +1,6 @@
 package be.vdab.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
@@ -14,20 +13,16 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class IndexServlet
  */
-//@WebServlet("/index.htm")
+@WebServlet("/index.htm")
 public class IndexServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final String VIEW = "/WEB-INF/JSP/index.jsp";
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter out = response.getWriter();
-		out.println("<!doctype html>");
-		out.println("<html lang='nl'><head>");
-		out.println("<title>Frituur Frida</title></head>");
-		out.println("<body><h1>Vandaag zijn we ");
 		LocalDate vandaag = LocalDate.now();
 		DayOfWeek weekdag = vandaag.getDayOfWeek();
-		out.print(weekdag == DayOfWeek.MONDAY || weekdag == DayOfWeek.THURSDAY ?
+		request.setAttribute("openGesloten", weekdag == DayOfWeek.MONDAY || weekdag == DayOfWeek.THURSDAY ?
 		"gesloten" : "open");
-		out.println("</h1></body></html>");
+		request.getRequestDispatcher(VIEW).forward(request, response);
 	}
 
 	/**
