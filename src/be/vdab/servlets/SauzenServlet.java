@@ -16,7 +16,7 @@ import be.vdab.repositories.SausRepository;
 public class SauzenServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private static final String VIEW = "/WEB-INF/JSP/sauzen.jsp";
-    private static SausRepository sausRepository = new SausRepository();
+    private final SausRepository sausRepository = new SausRepository();
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setAttribute("sauzen", sausRepository.findAll());
 		request.getRequestDispatcher(VIEW).forward(request, response);
