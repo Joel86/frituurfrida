@@ -6,6 +6,7 @@
 		<c:import url='head.jsp'><c:param name='title' value='Sauzen'/></c:import>
 	</head>
 	<body>
+		<c:import url='/WEB-INF/JSP/menu.jsp'/>
 		<h1>Sauzen</h1>
 		<c:forEach var='saus' items='${sauzen}'>
 			<h2>${saus.naam}</h2>
