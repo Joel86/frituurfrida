@@ -5,5 +5,6 @@
 <li><a href="<c:url value='/'/>">Welkom</a></li>
 <li><a href="<c:url value='/sauzen.htm'/>">Sauzen</a></li>
 <li><a href="<c:url value='/ingredienten.htm'/>">Ingredienten</a></li>
+<li><a href="<c:url value='/meisjesjongens.htm'/>">Meisjes Jongens</a></li>
 </ul></nav>
 </header>
