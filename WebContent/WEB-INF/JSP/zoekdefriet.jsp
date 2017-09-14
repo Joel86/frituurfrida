@@ -12,6 +12,7 @@
 </c:import>
 </head>
 <body>
+	<c:import url='/WEB-INF/JSP/menu.jsp'/>
 	<h1>Zoek de friet</h1>
 	<form method='post'>
 		<c:forEach items='${zoekDeFrietSpel.deuren}' var='deur'
