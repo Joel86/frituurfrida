@@ -1,33 +1,87 @@
 package be.vdab.repositories;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import be.vdab.entities.Saus;
 
-public class SausRepository {
-	private static Map<Long, Saus> SAUZEN = new ConcurrentHashMap<>();
-	static {
-		SAUZEN.put(3L, new Saus(3L, "cocktail", Arrays.asList("mayonaise", "ketchup", "cognac")));
-		SAUZEN.put(6L, new Saus(6L, "mayonaise", Arrays.asList("ei", "mosterd")));
-		SAUZEN.put(7L, new Saus(7L, "mosterd", Arrays.asList("mosterd", "azijn", "witte wijn")));
-		SAUZEN.put(12L, new Saus(12L, "tartare", Arrays.asList("mayonaise", "augurk", "tabasco")));
-		SAUZEN.put(44L, new Saus(44L,"vinaigrette",Arrays.asList("olijfolie","mosterd","azijn")));
-	}
+public class SausRepository extends AbstractRepository {
+	private static final String FIND_ALL = "select sauzen.id, sauzen.naam as sausnaam,"
+			+ " ingredienten.naam as ingredientnaam" + " from sauzen left join sauzeningredienten"
+			+ " on sauzen.id = sauzeningredienten.sausid" + " left join ingredienten"
+			+ " on sauzeningredienten.ingredientid = ingredienten.id" + " order by sauzen.naam";
+	private static final String FIND_BY_INGREDIENT = "select sauzen.id, sauzen.naam as sausnaam"
+			+ " from sauzen inner join sauzeningredienten" + " on sauzen.id = sauzeningredienten.sausid"
+			+ " inner join ingredienten" + " on sauzeningredienten.ingredientid = ingredienten.id"
+			+ " where ingredienten.naam = ?" + " order by sauzen.naam";
+	private static final String DELETE = "delete from sauzen where id in(";
+
 	public List<Saus> findAll() {
-		return new ArrayList<>(SAUZEN.values());
+		try(Connection connection = dataSource.getConnection();
+				Statement statement = connection.createStatement()) {
+			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			connection.setAutoCommit(false);
+			List<Saus> sauzen = new ArrayList<>();
+			try(ResultSet resultSet = statement.executeQuery(FIND_ALL)) {
+				for(long vorigeId = 0; resultSet.next();) {
+					long id = resultSet.getLong("id");
+					if(id != vorigeId) {
+						sauzen.add(resultSetRijNaarSausZonderIngredienten(resultSet));
+						vorigeId = id;
+					}
+					sauzen.get(sauzen.size() - 1).addIngredient(resultSet.getString("ingredientnaam"));
+				}
+			}
+			return sauzen;
+		} catch(SQLException ex) {
+			throw new RepositoryException(ex);
+		}
 	}
+
 	public List<Saus> findByIngredient(String ingredient) {
-		return SAUZEN.values().stream()
-				.filter(saus -> saus.getIngredienten().contains(ingredient))
-				.collect(Collectors.toList());
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement statement = connection.prepareStatement(FIND_BY_INGREDIENT)) {
+			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			connection.setAutoCommit(false);
+			statement.setString(1, ingredient);
+			List<Saus> sauzen = new ArrayList<>();
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					sauzen.add(resultSetRijNaarSausZonderIngredienten(resultSet));
+				}
+				return sauzen;
+			}
+		} catch (SQLException ex) {
+			throw new RepositoryException(ex);
+		}
 	}
-	public void delete(Set<Long> idStream) {
-		idStream.forEach(id -> SAUZEN.remove(id));
+
+	private Saus resultSetRijNaarSausZonderIngredienten(ResultSet resultSet) throws SQLException {
+		return new Saus(resultSet.getLong("id"), resultSet.getString("sausnaam"), new ArrayList<String>());
+	}
+
+	public void delete(Set<Long> ids) {
+		StringBuilder sql = new StringBuilder(DELETE);
+		ids.forEach(id -> sql.append("?,"));
+		sql.deleteCharAt(sql.length() - 1);
+		sql.append(')');
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			connection.setAutoCommit(false);
+			int index = 1;
+			for (long id : ids) {
+				statement.setLong(index++, id);
+			}
+			statement.executeUpdate();
+		} catch (SQLException ex) {
+			throw new RepositoryException(ex);
+		}
 	}
 }
