@@ -32,24 +32,11 @@ input:focus,textarea:focus,select:focus {
 background-color: #FFFFD6
 }
 nav ul {
-	background-color: white;
-	padding: 0.4em 0;
+list-style:none;
+padding:0;
 }
-
-nav li {
-	display: inline;
-}
-
-nav li a {
-	color: black;
-	font-weight: bold;
-	padding-left: 0.5em;
-	text-decoration: none;
-	vertical-align: middle;
-}
-
-nav li a:hover {
-	color: red;
+nav ul li {
+display:inline;
 }
 .meisjes {
 	background-color: #FFCCFF;
