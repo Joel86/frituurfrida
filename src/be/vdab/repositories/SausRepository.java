@@ -80,6 +80,7 @@ public class SausRepository extends AbstractRepository {
 				statement.setLong(index++, id);
 			}
 			statement.executeUpdate();
+			connection.commit();
 		} catch (SQLException ex) {
 			throw new RepositoryException(ex);
 		}
