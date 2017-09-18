@@ -26,6 +26,7 @@ public class SausRepository extends AbstractRepository {
 		try(Connection connection = dataSource.getConnection();
 				Statement statement = connection.createStatement()) {
 			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			connection.setAutoCommit(false);
 			List<Saus> sauzen = new ArrayList<>();
 			try(ResultSet resultSet = statement.executeQuery(FIND_ALL)) {
 				for(long vorigeId = 0; resultSet.next();) {
@@ -37,6 +38,7 @@ public class SausRepository extends AbstractRepository {
 					sauzen.get(sauzen.size() - 1).addIngredient(resultSet.getString("ingredientnaam"));
 				}
 			}
+			connection.commit();
 			return sauzen;
 		} catch(SQLException ex) {
 			throw new RepositoryException(ex);
@@ -47,12 +49,14 @@ public class SausRepository extends AbstractRepository {
 		try (Connection connection = dataSource.getConnection();
 				PreparedStatement statement = connection.prepareStatement(FIND_BY_INGREDIENT)) {
 			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			connection.setAutoCommit(false);
 			statement.setString(1, ingredient);
 			List<Saus> sauzen = new ArrayList<>();
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
 					sauzen.add(resultSetRijNaarSausZonderIngredienten(resultSet));
 				}
+				connection.commit();
 				return sauzen;
 			}
 		} catch (SQLException ex) {
