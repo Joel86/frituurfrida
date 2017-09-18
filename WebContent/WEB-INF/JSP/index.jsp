@@ -1,17 +1,22 @@
 <%@page contentType='text/html' pageEncoding='UTF-8' session='false'%>
 <%@taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
+<%@taglib prefix='fmt' uri='http://java.sun.com/jsp/jstl/fmt'%>
+<fmt:setBundle basename='resourceBundles.teksten'/>
 <!doctype html>
 <html lang='nl'>
 	<head>
-		<c:import url='/WEB-INF/JSP/head.jsp'>
-			<c:param name='title' value='Frituur Frida'/>
+		<fmt:message key='frituurFrida' var='title'/>
+		<c:import url='/WEB-INF/JSP/head.jsp'>		
+			<c:param name='title' value='${title}'/>
 		</c:import>
 	</head>
 	<body>
 		<c:import url='/WEB-INF/JSP/menu.jsp'/>
-		<h1>Vandaag zijn we ${openGesloten}</h1>
-		<img src='images/${openGesloten}.png' alt='${openGesloten}'>
-		<h2>Adres</h2>
+		<h1><fmt:message key='vandaagZijnWe${openGesloten}'/></h1>
+		<fmt:message key='afbeelding${openGesloten}' var='afbeelding'/>
+		<img src='<c:url value="/images/${afbeelding}.png"/>'
+			alt="<fmt:message key='${openGesloten}'/>">
+		<h2><fmt:message key='adres'/></h2>
 		${adres.straat} ${adres.huisNr}<br>
 		${adres.gemeente.postcode} ${adres.gemeente.naam}
 		<div>Telefoonnummer helpdesk:
