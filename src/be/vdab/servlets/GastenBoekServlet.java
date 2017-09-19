@@ -1,8 +1,10 @@
 package be.vdab.servlets;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -36,6 +38,10 @@ public class GastenBoekServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if(request.getParameter("toevoegen") != null) {
 			toevoegen(request,response);
+		} else if(request.getParameter("uitloggen") != null) {
+			uitloggen(request,response);
+		} else if(request.getParameter("verwijderen") != null) {
+			verwijderen(request,response);
 		}
 	}
 	private void toevoegen(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -56,5 +62,22 @@ public class GastenBoekServlet extends HttpServlet {
 			request.setAttribute("fouten", fouten);
 			request.getRequestDispatcher(VIEW).forward(request, response);
 		}
+	}
+	private void uitloggen(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.getSession().removeAttribute("beheer");
+		response.sendRedirect(response.encodeRedirectURL(
+				request.getContextPath() + REDIRECT_URL));
+	}
+	private void verwijderen(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String[] idsAlsString=request.getParameterValues("id");
+		if (idsAlsString != null) {
+			gastenBoekRepository.delete(
+			Arrays.stream(idsAlsString)
+			.map(id -> Long.parseLong(id))
+			.collect(Collectors.toSet()));
+		}
+		response.sendRedirect(response.encodeRedirectURL(
+		request.getContextPath() + REDIRECT_URL));
 	}
 }

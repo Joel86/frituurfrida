@@ -4,4 +4,8 @@
     <param-name>telefoonHelpdesk</param-name>
     <param-value>011/211137</param-value>
   </context-param>
+   	<context-param>
+   	<param-name>paswoord</param-name>
+   	<param-value>bolle</param-value>
+  </context-param>
 </web-app>

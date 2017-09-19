@@ -1,6 +1,7 @@
-<%@ page contentType='text/html' pageEncoding='UTF-8' session='false'%>
+<%@ page contentType='text/html' pageEncoding='UTF-8'%>
 <%@taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
 <%@taglib prefix='fmt' uri='http://java.sun.com/jsp/jstl/fmt'%>
+<%@taglib prefix='vdab' uri='http://vdab.be/tags'%>
 <!doctype html>
 <html lang='nl'>
 <head>
@@ -9,7 +10,13 @@
 </c:import>
 </head>
 <body>
+	<vdab:menu/>
 	<h1>Gastenboek</h1>
+	<c:if test='${not empty beheer}'>
+		<form method='post'>
+			<input type='submit' value='Uitloggen' name='uitloggen'>
+		</form>
+	</c:if>
 	<c:choose>
 		<c:when test='${empty param.toevoegen}'>
 			<a href='<c:url value="/gastenboek.htm?toevoegen=true"/>'>Toevoegen</a>
@@ -24,6 +31,9 @@
 		</c:otherwise>
 	</c:choose>
 	<c:if test='${not empty gastenboek}'>
+		<c:if test='${not empty beheer}'>
+			<form method='post'>
+		</c:if>
 		<dl>
 			<c:forEach var='entry' items='${gastenboek}'>
 				<fmt:parseDate value="${entry.datum}" pattern="yyyy-MM-dd"
@@ -32,9 +42,16 @@
 					<fmt:formatDate value='${datumAlsDate}' type='date'
 						dateStyle='short' timeStyle='short' />
 					${entry.naam}
+					<c:if test='${not empty beheer}'>
+						<input type='checkbox' name='id' value='${entry.id}'>
+					</c:if>
 				</dt>
 				<dd>${entry.bericht}</dd>
 			</c:forEach>
+			<c:if test='${not empty beheer}'>
+				<input type='submit' value='Verwijderen' name='verwijderen'>
+				</form>
+			</c:if>
 		</dl>
 	</c:if>
 </body>
